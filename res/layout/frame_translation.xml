@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:id="@+id/main_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#FFFFFF" >
+
+        <EditText
+            android:id="@+id/et_frame_translation_query"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="32dp"
+            android:ems="10" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/btn_frame_translation_query"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/et_frame_translation_query"
+            android:layout_toRightOf="@+id/et_frame_translation_query"
+            android:text="搜 索" />
+
+        <TextView
+            android:id="@+id/txt_frame_translation_trans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/et_frame_translation_query"
+            android:layout_below="@+id/btn_frame_translation_query"
+            android:layout_marginTop="26dp"
+            android:text="add
+            
+[sdf sdf]
+
+增加"
+            android:textSize="30px" />
+    </RelativeLayout>
+
+</RelativeLayout>

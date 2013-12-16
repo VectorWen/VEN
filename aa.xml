@@ -1,0 +1,124 @@
+<wordbook><item>    <word>precompiled</word>
+    <trans>n. 预编译；先行编译</trans>
+    <phonetic></phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>fatal</word>
+    <trans>adj. 致命的；重大的；毁灭性的；命中注定的</trans>
+    <phonetic>['feɪt(ə)l]</phonetic>
+    <tags></tags>
+    <progress>2</progress>
+</item><item>    <word>directive</word>
+    <trans>n. 指示；指令 
+adj. 指导的；管理的</trans>
+    <phonetic>[dɪ'rektɪv; daɪ-]</phonetic>
+    <tags></tags>
+    <progress>2</progress>
+</item>  <item>    <word>POW</word>
+    <trans>abbr. 战俘（prisoner of war）</trans>
+    <phonetic>[paʊ]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>conj</word>
+    <trans>n. 连接词；连词（等于conjunction）</trans>
+    <phonetic>[]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    
+	<word>imag</word>
+    <trans>n. 复数虚部；图像放大</trans>
+    <phonetic>[]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>angle</word>
+    <trans>vi. 钓鱼；谋取  n. 角度，角</trans>
+    <phonetic>['æŋg(ə)l]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>plot</word>
+    <trans>n. 情节；图；阴谋  vt. 密谋；绘图；划分；标绘  vi. 密谋；策划；绘制</trans>
+    <phonetic>[plɒt]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>digit</word>
+    <trans>n. 数字；手指或足趾；一指宽</trans>
+    <phonetic>['dɪdʒɪt]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>real</word>
+    <trans>adj. 实际的；真实的；实在的  adv. 真正地；确实地  n. 现实；实数</trans>
+    <phonetic>[riːl]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>exp</word>
+    <trans>abbr. 经验值；指数函数</trans>
+    <phonetic>[eksp]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>fix</word>
+    <trans>vt. 使固定；修理；安装；准备  vi. 固定；注视  n. 困境；方位；贿赂</trans>
+    <phonetic>[fɪks]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>variable</word>
+    <trans>adj. 变量的；可变的；易变的，多变的；变异的，[生物] 畸变的  n. [数] 变量；可变物，可变因素</trans>
+    <phonetic>['veərɪəb(ə)l]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>lock</word>
+    <trans>vt. 锁，锁上；隐藏 
+vi. 锁；锁住；卡住 
+n. 锁；水闸；刹车</trans>
+    <phonetic>[lɒk]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>measure</word>
+    <trans>n. 测量；措施；程度；尺寸 
+vt. 测量；估量；权衡 
+vi. 测量；估量</trans>
+    <phonetic>['meʒə]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>dimension</word>
+    <trans>n. [数] 维；尺寸；次元；容积 
+adj. 规格的 
+vt. 标出尺寸</trans>
+    <phonetic>[dɪ'menʃ(ə)n; daɪ-]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>measured</word>
+    <trans>adj. 量过的；慎重的；基于标准的；有规则的 
+v. 测量，判断（measure的过去分词）</trans>
+    <phonetic>['meʒəd]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>special</word>
+    <trans>n. 特使，特派人员；特刊；特色菜；专车；特价商品 
+adj. 特别的；专门的，专用的</trans>
+    <phonetic>['speʃ(ə)l]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>touch</word>
+    <trans>vt. 接触；触动；使轻度受害 
+vi. 触摸；涉及；接近；提到 
+n. 接触；触觉；格调；少许</trans>
+    <phonetic>[tʌtʃ]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>trackball</word>
+    <trans>n. 轨迹球；追踪球</trans>
+    <phonetic>['træk,bɔl]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>inflate</word>
+    <trans>vt. 使充气；使通货膨胀 
+vi. 膨胀；充气</trans>
+    <phonetic>[ɪn'fleɪt]</phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item><item>    <word>linspace</word>
+    <trans>abbr. 线性等分向量（linear space）</trans>
+    <phonetic></phonetic>
+    <tags></tags>
+    <progress>1</progress>
+</item></wordbook>
