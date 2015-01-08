@@ -9,12 +9,12 @@ import android.widget.Toast;
 
 public abstract class BaseUIActivity extends Activity {
 	/**
-	 * ³õÊ¼»¯Layout UI µÈµÈ
+	 * åˆå§‹åŒ–æ§ä»¶
 	 */
 	protected abstract void initLayout();
 
 	/**
-	 * ³õÊ¼»¯Êı¾İ
+	 * åˆå§‹åŒ–æ•°æ®ï¼Œåœ¨initLayout() å‰è°ƒç”¨
 	 */
 	protected abstract void initData();
 
@@ -31,7 +31,6 @@ public abstract class BaseUIActivity extends Activity {
 	}
 
 	/**
-	 * ÒÔÒ»¸öClass<?> clsÆô¶¯Ò»¸öActivity
 	 * 
 	 * @param cls
 	 */
@@ -40,7 +39,6 @@ public abstract class BaseUIActivity extends Activity {
 	}
 
 	/**
-	 * ÒÔÒ»¸öintentÀ´Æô¶¯Ò»¸öActivity
 	 * 
 	 * @param intent
 	 */
@@ -48,14 +46,12 @@ public abstract class BaseUIActivity extends Activity {
 		this.startActivity(intent);
 	}
 	/**
-	 * ¹Ø±ÕActivity
 	 */
 	public void closeActivity(){
 		this.finish();
 	}
 
 	/**
-	 * ·â×°ÁËToast£¬Ö±½Ótoast£¨String content£©
 	 * 
 	 * @param content
 	 *            content of your want to Toast
@@ -65,7 +61,6 @@ public abstract class BaseUIActivity extends Activity {
 	}
 
 	/**
-	 * ÇáÁ¿·â×°findViewById(int id)
 	 * 
 	 * @param id
 	 * @return
@@ -74,7 +69,6 @@ public abstract class BaseUIActivity extends Activity {
 		return this.findViewById(id);
 	}
 	/**
-	 * ÓÃclass °ü×°Ò»¸öIntent;
 	 * @param cls
 	 * @return
 	 */

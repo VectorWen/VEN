@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="30dp"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/frame_sentence_tv_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="5dp"
+        android:gravity="right"
+        android:text="14-5-24"
+        android:textColor="#666666"
+        android:textSize="13dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/frame_sentence_tv_sentence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="My respect to you family is very sincere."
+            android:textColor="#444444"
+            android:textSize="18dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <ImageView
+                android:id="@+id/frame_sentence_iv_articulate"
+                android:layout_width="33dp"
+                android:layout_height="33dp"
+                android:background="@drawable/btn_laba"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/frame_sentence_iv_add_sentence"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:layout_alignTop="@+id/frame_sentence_iv_articulate"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="3dp"
+                android:layout_toRightOf="@+id/frame_sentence_iv_articulate"
+                android:background="@drawable/btn_add_word_list"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/frame_sentence_iv_added_sentence"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:layout_alignTop="@+id/frame_sentence_iv_articulate"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="3dp"
+                android:layout_toRightOf="@+id/frame_sentence_iv_articulate"
+                android:background="@drawable/btn_added_word_list"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+        </RelativeLayout>
+         <TextView
+            android:id="@+id/frame_sentence_tv_sentence_trans"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="我对贵家族的尊重是非常真诚的。"
+            android:textColor="#4444ee"
+            android:textSize="18dp" />
+        
+    </LinearLayout>
+
+</LinearLayout>

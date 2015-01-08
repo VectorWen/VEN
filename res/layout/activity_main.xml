@@ -1,0 +1,53 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/main_header"
+        layout="@layout/main_header" />
+
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#fff" >
+
+        
+          <include
+            android:id="@+id/main_frame_translation"
+            layout="@layout/frame_translation"
+         />
+          <include
+            android:id="@+id/main_frame_word_list"
+            layout="@layout/frame_word_list"
+            android:visibility="gone"
+         />
+          <include
+            android:id="@+id/main_frame_sentence"
+            layout="@layout/frame_sentence"
+            android:visibility="gone"
+         />
+          <fragment
+              android:id="@+id/main_fram_downvideo"
+              android:name="com.ven.fragment.DownVideoFragment"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+               />
+          
+          <fragment
+              android:id="@+id/main_fram_video"
+              android:name="com.ven.fragment.VideoFragment"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+               />
+          
+    </FrameLayout>
+
+    <include
+        android:id="@+id/main_footer"
+        layout="@layout/main_footer" />
+
+</LinearLayout>

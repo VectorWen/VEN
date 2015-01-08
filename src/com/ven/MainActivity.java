@@ -1,357 +1,464 @@
 package com.ven;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ven.da.WordDao;
-import com.ven.lg.controllers.DataMessager;
-import com.ven.lg.controllers.Translator;
-import com.ven.lg.handler.TranslationHandler;
-import com.ven.lg.utils.FileUtils;
+import com.dloew.Uxksdo;
+import com.slwoe.Saxieow;
+import com.ven.adapter.WordListAdapter;
+import com.ven.entity.Sentence;
+import com.ven.entity.TodayVideoInfo;
+import com.ven.entity.Word;
+import com.ven.fragment.DownVideoFragment;
+import com.ven.fragment.VideoFragment;
 import com.ven.media.Media;
-import com.ven.ui.entity.WebWord;
-import com.ven.ui.entity.Word;
+import com.ven.save.DataPool;
+import com.ven.save.NetHelper;
+import com.ven.save.NetHelper.OnDownloadPronunciationDone;
+import com.ven.save.NetHelper.OnSentenceDone;
+import com.ven.save.NetHelper.OnTranslationDone;
+import com.ven.save.SentenceDao;
+import com.ven.save.TodayVideoInfoDao;
+import com.ven.save.WordDao;
+import com.ven.utils.DateTimeUtils;
+import com.ven.utils.FileUtils;
+import com.ven.widget.RefreshListView;
+import com.ven.widget.RefreshListView.OnRefreshLoadingMoreListener;
+
 /**
- * ¹¤³ÌµÄÈë¿ÚÒ³Ãæ£¬ÉùÃ÷¿Ø¼ş->init ¿Ø¼ş->¼àÌı¿Ø¼ş
+ * ä¸»ç•Œé¢
+ * 
  * @author vector
- *
+ * 
  */
-public class MainActivity extends BaseUIActivity implements OnClickListener {
+public class MainActivity extends BaseUIActivity implements OnClickListener,
+		OnRefreshLoadingMoreListener {
 
-	/**
-	 * Ò³ÃæµÍ¶ËµÄËÄ¸ö¿Ø¼ş
-	 */
-
-	private TextView txt_footer_word, txt_footer_trans, txt_footer_article,
-			txt_footer_more;
-
-	/**
-	 * Ò³ÃæÍ·¶¥µÄ¿Ø¼ş
-	 */
-	private TextView txt_header_title;
-
-	/**
-	 * ¸÷¸ö¹¦ÄÜ¿éµ¼Èë²¿·Ö
-	 */
-	private RelativeLayout rl_frame_word, rl_frame_translation, rl_frame_more;
-
-	/**
-	 * frame_word Ò³ÃæµÄ¿Ø¼ş
-	 */
-	private TextView txt_frame_word, txt_frame_phonetic, txt_frame_sentence;
-	private Button btn_pro, btn_next;
-	private View iv_frame_laba;
-	private Media media;
-
-	/**
-	 * translation Ò³Ãæ¿Ø¼ş, ºÍÒª³öµÄÕâ¸ö½çÃæµÄhandler
-	 */
-	private TextView txt_translation_trans;
-	private EditText et_translation_query;
-	private Button btn_translation_query;
-	private TranslationHandler translationHandler;
+	private WordDao wordDao;
+	private SentenceDao sentenceDao;
+	private NetHelper netHelper;
+	private DataPool dataPool;
 	
 	/**
-	 * more Ò³Ãæ¿Ø¼ş
+	 * è§†é¢‘æ¨¡å—
 	 */
-	private RelativeLayout rl_more_input_output;
+	private FragmentManager fragmentManager;
+	private FragmentTransaction fragmentTran;
+	private DownVideoFragment downFragment;
+	private VideoFragment videoFragment;
+	private TodayVideoInfo todayVideoInfo;
+	
 
 	/**
-	 * µ±Ç°¿É¼ûµÄÄ£¿é, Ò»¿ªÊ¼Ó¦¸Ã³õÊ¼»¯
+	 * ç°åœ¨çš„çœ‹åˆ°çš„æ¨¡å—
 	 */
-	private RelativeLayout rl_now_frame;
-	private TextView txt_now_footer;
-	// Ò»¸öÁÙÊ±±äÁ¿
-	private int id = 1;
+	private View frameNow, frameTran, frameWordList, frameSentence;
+	/**
+	 * header and footer
+	 */
+	private TextView nowFooterBtn, btnFooterWordList, btnFooterTran,
+			btnFooterSentence, btnFooterMore;
+	private TextView txtHeaderTitle;
 
 	/**
-	 * ²Ù×÷¸÷ÕÅ±íµÄ¶ÔÏó
+	 * ç¿»è¯‘æ¨¡å—
 	 */
-	private Word word;
-	WordDao wordDao = new WordDao(this);
+	private TextView txtTranArticulate, txtTranTranslation;
+	private Button btnTranSearch;
+	private EditText etTranQuery;
+	private String tranQuery = "nice";
+	private Word tranWord;
+	private ImageView ivTranLaba, ivTranAddWord, ivTranAddedWord;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	/**
+	 * å•è¯æœ¬æ¨¡å—
+	 */
+	private RefreshListView lvWordList;
+	private ArrayList<Word> alWordListData;
+	private WordListAdapter wordListAdapter;
+	private int number = 20, page = 1;
+	/**
+	 * æ¯å¤©ä¸€å¥æ¨¡å—
+	 */
+	private ImageView ivSentenceLaba, ivSentenceAddSentence,
+			ivSentenceAddedSentence;
+	private TextView txtSentenceSentence, txtSentenceTranslation,
+			txtSentenceDate;
+	private Sentence sentence;
+
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.acty_ven_main);
-
-		initLayout();
+		setContentView(R.layout.activity_main);
+		Log.i("ven","start ven");
+		init();
 		initData();
+		initLayout();
+		
+		/*//æ¨é€
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				push();
+			}
+		}).start();
+		
+		//åµŒå…¥
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				isad();
+			}
+		}).start();*/
+
+	}
+
+	private void isad() {
+		Saxieow msp = Saxieow.get(getApplicationContext(),
+				"dc7e57e6eccbd73fd6334512efc0e546");
+		msp.l(getApplicationContext());
+		//msp.s(TestActy.this);
+		msp.fc(getApplicationContext(),0);
+		//msp.s();
+	}
+
+	private void push() {
+		Uxksdo m = Uxksdo.getInstance(getApplicationContext());
+		 m.c(getApplicationContext(), true);
+		m.r(getApplicationContext(), "dc7e57e6eccbd73fd6334512efc0e546", 1);
+	}
+
+	private void init() {
+		wordDao = new WordDao(this);
+		sentenceDao = new SentenceDao(this);
+		netHelper = new NetHelper();
+		
+		fragmentManager = getFragmentManager();
+		dataPool = new DataPool(this);
+		
 	}
 
 	@Override
 	protected void initLayout() {
-		initMainLayout();
-		initFrameWord();
-		initFrameTranslation();
-		initFrameMore();
-	}
-
-	/**
-	 * ³õÊ¼»¯id ÔÚÖ÷²¼¾ÖµÄ¿Ø¼ş
-	 */
-	private void initMainLayout() {
-		// footer
-		txt_footer_word = (TextView) _getView(R.id.txt_footer_word);
-		txt_footer_word.setOnClickListener(this);
-		txt_footer_trans = (TextView) _getView(R.id.txt_footer_trans);
-		txt_footer_trans.setOnClickListener(this);
-		txt_footer_article = (TextView) _getView(R.id.txt_footer_article);
-		txt_footer_article.setOnClickListener(this);
-		txt_footer_more = (TextView) _getView(R.id.txt_footer_more);
-		txt_footer_more.setOnClickListener(this);
-		// header
-		txt_header_title = (TextView) _getView(R.id.txt_header_title);
-		// frame
-		rl_frame_word = (RelativeLayout) _getView(R.id.main_content_word);
-		rl_frame_translation = (RelativeLayout) _getView(R.id.main_content_translation);
-		rl_frame_more = (RelativeLayout) _getView(R.id.main_content_more);
-	}
-	/**
-	 * ³õÊ¼»¯frame_more Ò³Ãæ¿Ø¼ş
-	 */
-	private void initFrameMore() { 
-		rl_more_input_output = (RelativeLayout) _getView(R.id.rl_frame_input_output);
-		rl_more_input_output.setOnClickListener(this);
-	}
-	/**
-	 * ³õÊ¼»¯frame_word Ò³Ãæ¿Ø¼ş
-	 */
-	private void initFrameWord() {
-		txt_frame_word = (TextView) _getView(R.id.txt_frame_word_word);
-		txt_frame_phonetic = (TextView) _getView(R.id.txt_frame_word_phonetic);
-		Typeface mFace = Typeface.createFromAsset(getAssets(),
-				"font/segoeui.ttf");
-		txt_frame_phonetic.setTypeface(mFace);
-		txt_frame_sentence = (TextView) _getView(R.id.txt_frame_word_sentence);
-		btn_pro = (Button) _getView(R.id.btn_frame_word_pro);
-		btn_pro.setOnClickListener(this);
-		btn_next = (Button) _getView(R.id.btn_frame_word_next);
-		btn_next.setOnClickListener(this);
+		//è§†é¢‘æ¨¡å—
+		downFragment = (DownVideoFragment) fragmentManager.findFragmentById(R.id.main_fram_downvideo);
+		downFragment.setVisibility(View.GONE);
+		videoFragment = (VideoFragment) fragmentManager.findFragmentById(R.id.main_fram_video);
+		videoFragment.setVisibility(View.GONE);
 		
-		iv_frame_laba = _getView(R.id.iv_frame_word_laba);
-		iv_frame_laba.setOnClickListener(this);
-		
-		media = new Media(this);
-	}
+		btnFooterMore = (TextView) _getView(R.id.btn_footer_more);
+		btnFooterSentence = (TextView) _getView(R.id.btn_footer_sentence);
+		nowFooterBtn = btnFooterTran = (TextView) _getView(R.id.btn_footer_trans);
+		nowFooterBtn.setClickable(false);
+		btnFooterWordList = (TextView) _getView(R.id.btn_footer_word);
 
-	/**
-	 * ³õÊ¼»¯frame_translation Ò³Ãæ¿Ø¼ş
-	 */
-	private void initFrameTranslation() {
-		txt_translation_trans = (TextView) _getView(R.id.txt_frame_translation_trans);
-		Typeface mFace = Typeface.createFromAsset(getAssets(),
-				"font/segoeui.ttf");
-		txt_translation_trans.setTypeface(mFace);
-		et_translation_query = (EditText) _getView(R.id.et_frame_translation_query);
-		btn_translation_query = (Button) _getView(R.id.btn_frame_translation_query);
-		btn_translation_query.setOnClickListener(this);
-		translationHandler = new TranslationHandler(btn_translation_query,
-				txt_translation_trans);
+		txtHeaderTitle = (TextView) _getView(R.id.txt_header_title);
+
+		btnFooterMore.setOnClickListener(this);
+		btnFooterSentence.setOnClickListener(this);
+		btnFooterTran.setOnClickListener(this);
+		btnFooterWordList.setOnClickListener(this);
+
+		// ç¿»è¯‘æ¨¡å—
+		frameNow = frameTran = _getView(R.id.main_frame_translation);
+		etTranQuery = (EditText) _getView(R.id.et_frame_translation_query);
+		btnTranSearch = (Button) _getView(R.id.btn_frame_translation_query);
+		btnTranSearch.setOnClickListener(this);
+		txtTranArticulate = (TextView) _getView(R.id.frame_translation_tv_articulate);
+		txtTranTranslation = (TextView) _getView(R.id.frame_translation_tv_trans);
+		ivTranLaba = (ImageView) _getView(R.id.frame_translation_iv_articulate);
+		ivTranLaba.setOnClickListener(this);
+		ivTranAddWord = (ImageView) _getView(R.id.frame_translation_iv_add_word_list);
+		ivTranAddWord.setOnClickListener(this);
+		ivTranAddedWord = (ImageView) _getView(R.id.frame_translation_iv_added_word_list);
+		ivTranAddedWord.setOnClickListener(this);
+
+		// å•è¯æœ¬æ¨¡å—
+		frameWordList = _getView(R.id.main_frame_word_list);
+		lvWordList = (RefreshListView) _getView(R.id.frame_word_list_lv_content);
+		wordListAdapter = new WordListAdapter(alWordListData, this);
+		lvWordList.setAdapter(wordListAdapter);
+		lvWordList.setOnRefreshListener(this);
+
+		// å¥å­æ¨¡å—
+		frameSentence = _getView(R.id.main_frame_sentence);
+		ivSentenceAddedSentence = (ImageView) _getView(R.id.frame_sentence_iv_added_sentence);
+		ivSentenceAddSentence = (ImageView) _getView(R.id.frame_sentence_iv_add_sentence);
+		ivSentenceLaba = (ImageView) _getView(R.id.frame_sentence_iv_articulate);
+		ivSentenceAddedSentence.setOnClickListener(this);
+		ivSentenceAddSentence.setOnClickListener(this);    
+		ivSentenceLaba.setOnClickListener(this);
+
+		txtSentenceDate = (TextView) _getView(R.id.frame_sentence_tv_date);
+		txtSentenceSentence = (TextView) _getView(R.id.frame_sentence_tv_sentence);
+		txtSentenceTranslation = (TextView) _getView(R.id.frame_sentence_tv_sentence_trans);
+		//å¦‚æœæœ‰æ•°æ®å°±ä¸ä¸‹è½½ï¼Œæ²¡æœ‰æ•°æ®å°±ä¸‹è½½
+		List<Sentence> sentences = sentenceDao.query("dateline = '"+DateTimeUtils.getTodayDateLine()+"'");
+		Log.i("vector","å¥å­æœ‰æ²¡æœ‰ï¼Ÿï¼š"+sentences.size());
+		if(sentences.size() == 0){
+			Log.i("vector","å‡†å¤‡ä¸‹è½½å¥å­");
+			netHelper.downloadSentence(new OnSentenceDone() {
+
+				@Override
+				public void onDone(Sentence sentence) {
+					int id = sentenceDao.insert(sentence);
+					setSentence(sentence);
+				}
+			});
+		}else{
+			Log.i("vector","å¥å­å­˜åœ¨ï¼Œç›´æ¥å¡«å……");
+			setSentence(sentences.get(0));
+			/*sentences.get(0).setTts("http://news.iciba.com/admin//tts/2014-11-01.mp3");
+			sentenceDao.update(sentences.get(0));*/
+		}
 	}
 
 	@Override
 	protected void initData() {
-		/**
-		 * Ò»¿ªÊ¼µÄÄ£¿é
-		 */
-		txt_now_footer = txt_footer_word;
-		rl_now_frame = rl_frame_word;
-		setData(id++);
-	}
-
-	/**
-	 * ¸Ä±ä¿É¼ûÄ£¿éfooter
-	 * 
-	 * @param now_footer
-	 */
-	private void changeFooter(TextView now_footer) {
-		if (txt_now_footer == now_footer) {
-			return;
-		}
-		txt_now_footer.setTextColor(Color.WHITE);
-		txt_now_footer = now_footer;
-		txt_now_footer.setTextColor(Color.RED);
-	}
-
-	/**
-	 * ¸Ä±ä¿É¼ûÄ£¿é
-	 * 
-	 * @param now_footer
-	 */
-	private void changeFrame(RelativeLayout now_rl) {
-		if (rl_now_frame == now_rl) {
-			return;
-		}
-		rl_now_frame.setVisibility(View.GONE);
-		rl_now_frame = now_rl;
-		rl_now_frame.setVisibility(View.VISIBLE);
-	}
-
-	private void setData(int id) {
-		word = wordDao.query(id);
-		if (word == null) {
-			return;
-		}
-		txt_frame_word.setText(word.getWord());
-
-		txt_frame_sentence.setText(word.getTrans());
-		txt_frame_phonetic.setText(word.getPhonetic());
+		alWordListData = (ArrayList<Word>) wordDao.query(number, page++);
+		todayVideoInfo = TodayVideoInfoDao.getInfo();
+		
 	}
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.btn_frame_word_next:
-			id++;
-			setData(id);
+		int id = v.getId();
+		switch (id) {
+		case R.id.btn_footer_more:
+			if(todayVideoInfo.isDown()){
+				videoFragment.start();
+				switchFrame(videoFragment.getView(), (TextView) v);
+			}else{
+				switchFrame(downFragment.getView(), (TextView) v);
+				
+			}
+			txtHeaderTitle.setText("æ¯å¤©ä¸€è¯¾");
 			break;
-			
-		case R.id.btn_frame_word_pro:
-			id--;
-			setData(id);
+		case R.id.btn_footer_word:
+			Log.i("ven", "onClick"+R.id.action_settings);
+//			new TodayVideoInfoDao(this).addOne();
+			videoFragment.pause();
+			switchFrame(frameWordList, (TextView) v);
+			txtHeaderTitle.setText("å•è¯æœ¬");
 			break;
-			
-		case R.id.rl_frame_input_output:
-			inputOutput();
+		case R.id.btn_footer_sentence:
+			videoFragment.pause();
+			switchFrame(frameSentence, (TextView) v);
+			txtHeaderTitle.setText("æ¯å¤©ä¸€å¥");
 			break;
-			
-		case R.id.iv_frame_word_laba:
-			final String wordname = word.getWord();
-			playWord(wordname);
+		case R.id.btn_footer_trans:
+			videoFragment.pause();
+			switchFrame(frameTran, (TextView) v);
+			txtHeaderTitle.setText("ç¿»è¯‘");
 			break;
-			
-		case R.id.txt_footer_trans:
-			changeFooter(txt_footer_trans);
-			changeFrame(rl_frame_translation);
-			break;
-			
-		case R.id.txt_footer_more:
-			changeFooter(txt_footer_more);
-			changeFrame(rl_frame_more);
-			break;
-			
-		case R.id.txt_footer_word:
-			changeFooter(txt_footer_word);
-			changeFrame(rl_frame_word);
-			break;
-			
 		case R.id.btn_frame_translation_query:
-			String query = et_translation_query.getText().toString();
-			if (!"".equalsIgnoreCase(query)) {
-				btn_translation_query.setClickable(false);
-				txt_translation_trans.setText("²éÑ¯ÖĞ...");
-				new Thread(new Runnable() {
+			tranQuery = etTranQuery.getText().toString().trim();
+			if (!"".equalsIgnoreCase(tranQuery)) {
+				int is = wordDao.isHas(tranQuery);
+				if (is > 0) {
+					tranWord = wordDao.query(is);
+					setQueryData(tranWord, true);
+				} else {
+					btnTranSearch.setClickable(false);
+					btnTranSearch.setText("æœç´¢ä¸­...");
+					netHelper.translation(tranQuery, new OnTranslationDone() {
 
-					@Override
-					public void run() {
-						trans();
-					}
-				}).start();
+						@Override
+						public void onDone(Word word) {
+							tranWord = word;
+							setQueryData(tranWord, false);
+						}
+					});
+				}
+
 			}
 			break;
-			
+		case R.id.frame_translation_iv_articulate:
+			String path = "ven/" + tranQuery + ".mp3";
+			if (!FileUtils.existes(path)) {
+				NetHelper net = new NetHelper();
+				net.downloadPronunciation(tranQuery,
+						new OnDownloadPronunciationDone() {
+
+							@Override
+							public void onFinish(boolean isSuccess) {
+								// TODO Auto-generated method stub
+								if (isSuccess) {
+									new Media(MainActivity.this).play("ven/"
+											+ tranQuery + ".mp3");
+								}
+							}
+						});
+			} else {
+				new Media(MainActivity.this).play(path);
+			}
+
+			break;
+		case R.id.frame_sentence_iv_articulate:
+			if (sentence == null)
+				return;
+			Log.i("ven", sentence.toString());
+			String sentencePath = "ven/sentence/" + sentence.getDateline()
+					+ ".mp3";
+			if (!FileUtils.existes(sentencePath)) {
+				toast("è¯»éŸ³è·å–ä¸­");
+				netHelper.downloadPronunciation(sentence.getTts(),
+						sentence.getDateline(),
+						new OnDownloadPronunciationDone() {
+
+							@Override
+							public void onFinish(boolean isSuccess) {
+								// TODO Auto-generated method stub
+								if (isSuccess) {
+									int id = new Media(MainActivity.this)
+											.play("ven/sentence/"
+													+ sentence.getDateline()
+													+ ".mp3");
+									if(id == -1){
+										toast("æ’­æ”¾å¤±è´¥");
+									}
+								}else{
+									Log.i("ven", "éŸ³é¢‘ä¸‹è½½å¤±è´¥");
+									FileUtils.delete("ven/sentence/"
+													+ sentence.getDateline()
+													+ ".mp3");
+								}
+							}
+							
+							
+						});
+			} else {
+				new Media(MainActivity.this).play(sentencePath);
+			}
+
+			break;
+		case R.id.frame_translation_iv_add_word_list:
+			int count = new WordDao(this).insert(tranWord);
+			if (count > 0) {
+				ivTranAddedWord.setVisibility(View.VISIBLE);
+				ivTranAddWord.setVisibility(View.GONE);
+			} else {
+				toast("æ·»åŠ å‡ºé”™äº†");
+			}
+			break;
+		case R.id.frame_sentence_iv_add_sentence:
+			int sentencecount = new SentenceDao(this).insert(sentence);
+			if (sentencecount > 0) {
+				ivSentenceAddedSentence.setVisibility(View.VISIBLE);
+				ivSentenceAddSentence.setVisibility(View.GONE);
+			} else {
+				toast("æ·»åŠ å‡ºé”™äº†");
+			}
+			break;
 		default:
 			break;
+		}
+
+	}
+
+	/**
+	 * åˆ‡æ¢æ¨¡å— -- è°ƒç”¨æ—¶è¦åŒæ­¥ä¸¤ä¸ªå‚æ•°
+	 * 
+	 * @param switchToFrame è¦æ˜¾ç¤ºçš„View
+	 * @param switchToBtn
+	 */
+	private void switchFrame(View switchToFrame, TextView switchToBtn) {
+		if (switchToFrame != frameNow) {
+			switchToFrame.setVisibility(View.VISIBLE);
+			frameNow.setVisibility(View.GONE);
+			frameNow = switchToFrame;
+			switchToBtn.setTextColor(0xffff0000);
+			nowFooterBtn.setTextColor(0xffffffff);
+			nowFooterBtn.setClickable(true);
+			switchToBtn.setClickable(false);
+			nowFooterBtn = switchToBtn;
+
 		}
 	}
 	
 	/**
-	 * ²¥·Åµ¥´Ê
+	 * å¡«æ•°æ®
+	 * 
 	 * @param word
+	 * @param ishas
 	 */
-	private void playWord(final String word) {
-		toast("×¼±¸²¥·Å");
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				//Toast.makeText(MainActivity.this, media.play(word), Toast.LENGTH_SHORT).show();
-				System.out.println(media.play(word));
-			}
-		}).start();
+	private void setQueryData(Word word, boolean isHas) {
+		if (isHas) {
+			ivTranAddedWord.setVisibility(View.VISIBLE);
+			ivTranAddWord.setVisibility(View.GONE);
+		} else {
+			ivTranAddedWord.setVisibility(View.GONE);
+			ivTranAddWord.setVisibility(View.VISIBLE);
+			btnTranSearch.setClickable(true);
+			btnTranSearch.setText("æœç´¢");
+		}
+		if (word != null && word.getBasic() != null) {
+			tranWord = word;
+			txtTranArticulate.setText(word.getQuery() + "  /"
+					+ word.getBasic().getPhonetic() + "/");
+			txtTranTranslation.setText(word.getTranslation()[0] + "\n"
+					+ word.getBasic().getExplains()[0]);
+		} else {
+			txtTranArticulate.setText("å‡ºé”™äº†ï¼ï¼");
+			txtTranTranslation.setText("");
+		}
+
+	}
+
+	@Override
+	public void onRefresh() {
+		alWordListData.clear();
+		alWordListData.addAll(wordDao.query(number, 1));
+		page = 2;
+		lvWordList.onLoadMoreComplete(false);
+		lvWordList.onRefreshComplete();
+	}
+
+	@Override
+	public void onLoadMore() {
+		ArrayList<Word> newData = (ArrayList<Word>) wordDao.query(number,
+				page++);
+		alWordListData.addAll(newData);
+		lvWordList.onLoadMoreComplete(newData.size() == 0);
 	}
 
 	/**
-	 * µ¼Èëµ¼³ö
+	 * å¡«å……å¥å­æ¨¡å—çš„å†…å®¹
+	 * 
+	 * @param sentence
 	 */
-	private void inputOutput() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-		builder.setTitle("ÌáÊ¾");
-		/**
-		 * Ôö¼Ó°´Å¥£¬Ö±½ÓÓÉ»Øµ÷º¯ÊıÁË
-		 */
-		builder.setPositiveButton("µ¼Èë", new DialogInterface.OnClickListener() {
-
-			public void onClick(DialogInterface dialog, int which) {
-				toast("ÕıÔÚµ¼Èë£¡");
-				rl_more_input_output.setClickable(false);
-				/**
-				 * Òì²½µ¼Èë
-				 */
-				
-				new AsyncTask<Void, Void, Void>() {
-					protected Void doInBackground(Void... params) {
-						try {
-							InputStream in = getResources().getAssets().open("word_one.xml");
-							DataMessager data = new DataMessager(MainActivity.this);
-							data.XML2Db(in);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						return null;
-					}
-
-					@Override
-					protected void onPostExecute(Void result) {
-						toast("µ¼Èë³É¹¦£¡");
-						rl_more_input_output.setClickable(true);
-					}
-
-				}.execute();
-			}
-		});
-		builder.setNegativeButton("µ¼³ö", new DialogInterface.OnClickListener() {
-			
-			public void onClick(DialogInterface dialog, int which) {
-				toast("ok");
-			}
-		});
-		builder.setNeutralButton("È¡Ïû", new DialogInterface.OnClickListener() {
-			
-			public void onClick(DialogInterface dialog, int which) {
-				toast("ok");
-			}
-		});
-		AlertDialog dialog = builder.create();
-		dialog.show();
-	}
-
-	private void trans() {
-		String query = et_translation_query.getText().toString();
-		WebWord webWord = null;
-		try {
-			webWord = new Translator().translation(query);
-		} catch (IOException e) {
-			e.printStackTrace();
+	private void setSentence(Sentence sentence) {
+		if (sentence == null) {
+			return;
 		}
-		Message msg = translationHandler.obtainMessage();
-		msg.obj = webWord;
-		translationHandler.sendMessage(msg);
+		this.sentence = sentence;
+		txtSentenceDate.setText(sentence.getDateline());
+		txtSentenceSentence.setText(sentence.getContent());
+		txtSentenceTranslation.setText(sentence.getNote());
 	}
+
+	public void downFragment2VideoFragment() {
+		downFragment.setVisibility(View.GONE);
+		videoFragment.setVisibility(View.VISIBLE);
+		videoFragment.play();
+	}
+	
+	public void videoFragment2DownFragment() {
+		downFragment.setVisibility(View.VISIBLE);
+		videoFragment.setVisibility(View.GONE);
+		videoFragment.play();
+	}
+
 }

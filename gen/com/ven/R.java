@@ -10,55 +10,107 @@ package com.ven;
 public final class R {
     public static final class attr {
     }
+    public static final class dimen {
+        /**  Default screen margins, per the Android Design guidelines. 
+
+         Customize dimensions originally defined in res/values/dimens.xml (such as
+         screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
+    
+         */
+        public static final int activity_horizontal_margin=0x7f040000;
+        public static final int activity_vertical_margin=0x7f040001;
+    }
     public static final class drawable {
-        public static final int ic_item_right=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int ic_search=0x7f020002;
-        public static final int laba=0x7f020003;
+        public static final int add_word_list=0x7f020000;
+        public static final int add_word_list_select=0x7f020001;
+        public static final int added_word_list=0x7f020002;
+        public static final int added_word_list_select=0x7f020003;
+        public static final int btn_add_word_list=0x7f020004;
+        public static final int btn_added_word_list=0x7f020005;
+        public static final int btn_del_word_list=0x7f020006;
+        public static final int btn_laba=0x7f020007;
+        public static final int del_word_list=0x7f020008;
+        public static final int del_word_list_select=0x7f020009;
+        public static final int ic_bg_back_false=0x7f02000a;
+        public static final int ic_bg_back_true=0x7f02000b;
+        public static final int ic_btn_bg_search=0x7f02000c;
+        public static final int ic_item_right=0x7f02000d;
+        public static final int ic_launcher=0x7f02000e;
+        public static final int ic_search=0x7f02000f;
+        public static final int ic_ven_logo=0x7f020010;
+        public static final int laba=0x7f020011;
+        public static final int laba_select=0x7f020012;
     }
     public static final class id {
-        public static final int btn_frame_translation_query=0x7f06000f;
-        public static final int btn_frame_word_next=0x7f060015;
-        public static final int btn_frame_word_pro=0x7f060014;
-        public static final int et_frame_translation_query=0x7f06000e;
-        public static final int imageView1=0x7f060007;
-        public static final int imageView2=0x7f06000b;
-        public static final int iv_frame_word_laba=0x7f060016;
-        public static final int main_content=0x7f060001;
-        public static final int main_content_more=0x7f060004;
-        public static final int main_content_translation=0x7f060003;
-        public static final int main_content_word=0x7f060002;
-        public static final int main_footer=0x7f060005;
-        public static final int main_header=0x7f060000;
-        public static final int relativeLayout2=0x7f06000a;
-        public static final int rl_frame_input_output=0x7f060006;
-        public static final int txt=0x7f060017;
-        public static final int txt_footer_article=0x7f06001a;
-        public static final int txt_footer_more=0x7f06001b;
-        public static final int txt_footer_trans=0x7f060019;
-        public static final int txt_footer_word=0x7f060018;
-        public static final int txt_frame_daorudaochu=0x7f060008;
-        public static final int txt_frame_dd=0x7f06000c;
-        public static final int txt_frame_translation_trans=0x7f060010;
-        public static final int txt_frame_word_phonetic=0x7f060012;
-        public static final int txt_frame_word_sentence=0x7f060013;
-        public static final int txt_frame_word_word=0x7f060011;
-        public static final int txt_header_title=0x7f06001c;
-        public static final int txt_hr=0x7f060009;
-        public static final int txt_hr2=0x7f06000d;
+        public static final int action_settings=0x7f08002d;
+        public static final int btn_footer_more=0x7f080029;
+        public static final int btn_footer_sentence=0x7f080028;
+        public static final int btn_footer_trans=0x7f080027;
+        public static final int btn_footer_word=0x7f080026;
+        public static final int btn_frame_translation_query=0x7f080017;
+        public static final int btn_start=0x7f08002b;
+        public static final int et_frame_translation_query=0x7f080016;
+        public static final int frame_downvideo_btn_down=0x7f08000e;
+        public static final int frame_downvideo_tv_info=0x7f08000d;
+        public static final int frame_sentence_iv_add_sentence=0x7f080012;
+        public static final int frame_sentence_iv_added_sentence=0x7f080013;
+        public static final int frame_sentence_iv_articulate=0x7f080011;
+        public static final int frame_sentence_tv_date=0x7f08000f;
+        public static final int frame_sentence_tv_sentence=0x7f080010;
+        public static final int frame_sentence_tv_sentence_trans=0x7f080014;
+        public static final int frame_translation_iv_add_word_list=0x7f08001b;
+        public static final int frame_translation_iv_added_word_list=0x7f08001c;
+        public static final int frame_translation_iv_articulate=0x7f08001a;
+        public static final int frame_translation_tv_articulate=0x7f080018;
+        public static final int frame_translation_tv_trans=0x7f080019;
+        public static final int frame_video_sv_video=0x7f08001d;
+        public static final int frame_video_tv_sentences=0x7f08001f;
+        public static final int frame_word_list_lv_content=0x7f080015;
+        public static final int head_contentLayout_refresh_list=0x7f080020;
+        public static final int head_tipsTextView__refresh_list=0x7f080021;
+        public static final int item_footer_ll_more=0x7f08000b;
+        public static final int item_footer_ll_refresh=0x7f080008;
+        public static final int item_footer_pb_refresh=0x7f080009;
+        public static final int item_footer_tv_more=0x7f08000c;
+        public static final int item_footer_tv_refresh=0x7f08000a;
+        public static final int item_lv_frame_word_iv_art=0x7f080024;
+        public static final int item_lv_frame_word_tv_phonetic=0x7f080023;
+        public static final int item_lv_frame_word_tv_translation=0x7f080025;
+        public static final int item_lv_frame_word_tv_word=0x7f080022;
+        public static final int main_content=0x7f080001;
+        public static final int main_footer=0x7f080007;
+        public static final int main_fram_downvideo=0x7f080005;
+        public static final int main_fram_video=0x7f080006;
+        public static final int main_frame_sentence=0x7f080004;
+        public static final int main_frame_translation=0x7f080002;
+        public static final int main_frame_word_list=0x7f080003;
+        public static final int main_header=0x7f080000;
+        public static final int scrollView1=0x7f08001e;
+        public static final int txt_header_title=0x7f08002a;
+        public static final int txt_reslue=0x7f08002c;
     }
     public static final class layout {
-        public static final int acty_ven_main=0x7f030000;
-        public static final int frame_more=0x7f030001;
-        public static final int frame_translation=0x7f030002;
-        public static final int frame_word=0x7f030003;
-        public static final int main=0x7f030004;
-        public static final int main_footer=0x7f030005;
-        public static final int main_header=0x7f030006;
+        public static final int activity_main=0x7f030000;
+        public static final int footer_refresh_list=0x7f030001;
+        public static final int frame_downvideo=0x7f030002;
+        public static final int frame_sentence=0x7f030003;
+        public static final int frame_sentence_list=0x7f030004;
+        public static final int frame_translation=0x7f030005;
+        public static final int frame_video=0x7f030006;
+        public static final int frame_word_list=0x7f030007;
+        public static final int head_refresh_list=0x7f030008;
+        public static final int item_lv_frame_word=0x7f030009;
+        public static final int main_footer=0x7f03000a;
+        public static final int main_header=0x7f03000b;
+        public static final int test=0x7f03000c;
+    }
+    public static final class menu {
+        public static final int main=0x7f070000;
     }
     public static final class string {
-        public static final int app_name=0x7f040001;
-        public static final int hello=0x7f040000;
+        public static final int action_settings=0x7f050001;
+        public static final int app_name=0x7f050000;
+        public static final int hello_world=0x7f050002;
     }
     public static final class style {
         /** 
@@ -67,10 +119,21 @@ public final class R {
 
     
  API 11 theme customizations can go here. 
+
+        Base application theme for API 11+. This theme completely replaces
+        AppBaseTheme from res/values/styles.xml on API 11+ devices.
+    
+ API 11 theme customizations can go here. 
+
+        Base application theme for API 14+. This theme completely replaces
+        AppBaseTheme from BOTH res/values/styles.xml and
+        res/values-v11/styles.xml on API 14+ devices.
+    
+ API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f050000;
+        public static final int AppBaseTheme=0x7f060000;
         /**  Application theme. 
          */
-        public static final int AppTheme=0x7f050001;
+        public static final int AppTheme=0x7f060001;
     }
 }

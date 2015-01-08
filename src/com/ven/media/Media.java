@@ -1,87 +1,308 @@
 package com.ven.media;
 
-import com.ven.lg.utils.FileUtils;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import javax.net.ssl.HandshakeCompletedListener;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceHolder.Callback;
+import android.view.SurfaceView;
+import android.view.View.OnClickListener;
+
+import com.ven.utils.FileUtils;
 
 /**
- * ²¥·ÅÒôÆµÎÄ¼ş£¬Ö÷ÒªÊÇÕë¶Ôµ¥´ÊÒôÆµÀ´Ğ´µÄÂß¼­
+ * éŸ³é¢‘æ’­æ”¾
+ * 
  * @author vector
- *
+ * 
  */
-public class Media {
-	/**
-	 * Ë­µ÷ÓÃµÄ
-	 */
+@SuppressLint("HandlerLeak")
+public class Media implements Callback {
+
+	public static final int MESSAGE_SEEKER = 0;
+
 	private Context context;
-	/**
-	 * ²¥·ÅÕß
-	 */
 	private MediaPlayer mediaPlayer;
-	/**
-	 * Òª²¥·ÅµÄÎÄ¼şÂ·¾¶
-	 */
-	private String rootPath = "file:///sdcard/ven/";
-	
-	/**
-	 * ³õÊ¼»¯¶ÔÏó
-	 * @param context
-	 */
+
+	// video ç›¸å…³çš„
+	private SurfaceView sv;
+	private SurfaceHolder sh;
+	private int currentPosition = 0;
+	private String path;
+
+	// Timer
+	private Timer timer;
+	private TimerTask timerTask;
+	private OnSeekerLinstener seekerLinstener;
+	private SeekerHandler handler;
+
 	public Media(Context context) {
 		this.context = context;
+		timer = new Timer();
 	}
 
-	
 	/**
-	 * ²¥·ÅMP3£¬ÏÈÅĞ¶ÏÊÇ·ñÓĞsdcard £¬ÔÚÅĞ¶ÏÎÄ¼şÊ±ºò´æÔÚ
-	 * @param path
+	 * è®¾è®¡è¿›åº¦ç›‘å¬
 	 */
-	public int play(String word){
-		//ÅĞ¶ÏÊÇ·ñÓĞsdcard ¿¨
-		if(!FileUtils.hasSDCard()){
-			return -1;
-		}
-		
-		//ÅĞ¶ÏÎÄ¼şÊÇ·ñ´æÔÚ
-		if(!FileUtils.ifFileExist(word+".mp3", "ven")){
-			//ÏÂÔØÈ¥
+	public void setOnSeekerLinstener(OnSeekerLinstener seekerLinstener) {
+		this.seekerLinstener = seekerLinstener;
+		handler = new SeekerHandler();
+	}
+
+	/**
+	 * æ’­æ”¾ä¸€ä¸ªéŸ³é¢‘æ–‡ä»¶
+	 * 
+	 * @param path
+	 *            è¦æ’­æ”¾çš„æ–‡ä»¶ æ ¼å¼ ven/add.mp3
+	 * @return
+	 */
+	public int play(String path) {
+		if (!FileUtils.hasSDCard()) {
 			return -2;
 		}
-		
-		mediaPlayer = MediaPlayer.create(context, Uri.parse(rootPath+word+".mp3"));
-		mediaPlayer.setOnCompletionListener(new CompletionListener(mediaPlayer));
+		// å¦‚æœæ–‡ä»¶ä¸å­˜åœ¨
+		if (!FileUtils.existes(path)) {
+			return -1;
+		}
+
+		mediaPlayer = MediaPlayer.create(context,
+				Uri.parse(FileUtils.SDCardRoot + path));
+
+		// å½“æ–‡ä»¶æ˜¯åçš„æ—¶å€™
+		if (mediaPlayer == null) {
+			Log.i("ven", FileUtils.SDCardRoot + path + " æ–‡ä»¶æŸå");
+			FileUtils.delete(path);
+			return -1;
+		}
+		mediaPlayer
+				.setOnCompletionListener(new CompletionListener(mediaPlayer));
+
 		mediaPlayer.setLooping(false);
+
 		mediaPlayer.start();
-		
+
 		return 1;
 	}
-	
+
 	/**
-	 * ¼àÌı²¥Íê
+	 * å‡†å¤‡ä¸€ä¸ªè§†é¢‘æ–‡ä»¶
+	 * 
+	 * @param path
+	 *            ven/video/1.1.1.f4v
+	 * @param sv
+	 * @return
+	 */
+	public int playVideo(String path, SurfaceView sv) {
+
+		if (!FileUtils.hasSDCard()) {
+			return -2;
+		}
+		// å¦‚æœæ–‡ä»¶ä¸å­˜åœ¨
+		if (!FileUtils.existes(path)) {
+			return -1;
+		}
+
+		if (path == null || sv == null)
+			return -3;
+		this.sv = sv;
+		this.sh = sv.getHolder();
+		this.path = path;
+		// è®¾ç½®Holder çš„Callback
+		sh.addCallback(this);
+		return 0;
+	}
+
+	public void start() {
+		if (mediaPlayer != null) {
+			mediaPlayer.start();
+			mediaPlayer.seekTo(currentPosition);
+			if (seekerLinstener != null) {
+				startTimer();
+			}
+		}
+	}
+
+	public void pause() {
+		if (mediaPlayer != null) {
+			mediaPlayer.pause();
+			currentPosition = mediaPlayer.getCurrentPosition();
+			if (seekerLinstener != null) {
+				stopTimer();
+			}
+		}
+	}
+
+	public void resume() {
+		if (mediaPlayer != null) {
+			mediaPlayer.start();
+			if (seekerLinstener != null) {
+				startTimer();
+			}
+		}
+	}
+
+	public void stop() {
+		if (mediaPlayer != null) {
+			mediaPlayer.stop();
+			if (seekerLinstener != null) {
+				stopTimer();
+			}
+		}
+	}
+
+	/**
+	 * åœ¨è§†é¢‘å¼€å§‹æ’­æ”¾çš„æ—¶å€™ï¼Œå¼€å§‹è®¡æ—¶ï¼Œ
+	 */
+	private void startTimer() {
+		if (timerTask != null) {
+			timerTask.cancel();
+		}
+
+		timerTask = new TimerTask() {
+
+			@Override
+			public void run() {
+				// æ—¶é—´åˆ°çš„æ—¶å€™ï¼Œå‘é€ä¸€ä¸ªä¿¡æ¯ç»™handlerï¼Œä¹‹åè°ƒç”¨å›è°ƒå‡½æ•°
+				if (mediaPlayer != null) {
+					handler.sendEmptyMessage(MESSAGE_SEEKER);
+				} else {
+					timerTask.cancel();
+				}
+			}
+		};
+		timer.schedule(timerTask, 0, 1000);
+	}
+
+	private void stopTimer() {
+		if (timer != null && timerTask != null) {
+			timerTask.cancel();
+			timer.purge();
+		}
+	}
+
+	/**
+	 * éŸ³é¢‘æ’­æ”¾ç›‘å¬
+	 * 
 	 * @author vector
-	 *
+	 * 
 	 */
 	class CompletionListener implements OnCompletionListener {
 		MediaPlayer mediaPlayer;
-		int playCount = 1;
-		
+
 		public CompletionListener(MediaPlayer mediaPlayer) {
 			this.mediaPlayer = mediaPlayer;
 		}
+
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			if(playCount<3){
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			mediaPlayer.release();
+		}
+	}
+
+	// Surface å›è°ƒæ–¹æ³•
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+		try {
+			// æ³¨é”€åçš„mediaPlayer æ˜¯ä¸èƒ½æ’­æ”¾äº†ï¼Œéœ€è¦é‡æ–°new ä¸€ä¸ª
+			mediaPlayer = new MediaPlayer();
+			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+			mediaPlayer.setDisplay(sv.getHolder());
+
+			mediaPlayer.setDataSource(FileUtils.SDCardRoot + path);
+
+			mediaPlayer.prepare();
+			setFull();
+			
+			mediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+			  
+				@Override 
+				public void onPrepared(MediaPlayer mp) {
+					start(); 
+				} 
+			});
+			 
+			mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					mediaPlayer.release();
+					mediaPlayer = null;
 				}
-				mediaPlayer.start();
-				playCount++;
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void surfaceChanged(SurfaceHolder holder, int format, int width,
+			int height) {
+
+	}
+
+	/**
+	 * é”€æ¯çš„æ—¶å€™ï¼Œä¿å­˜ç°åœºï¼Œä¹‹ååœæ­¢æ’­æ”¾ï¼Œæ³¨é”€èµ„æºï¼Œå¦‚æœmediaPlayer æœ¬æ¥å°±æ˜¯æ’­æ”¾å®Œäº†ï¼Œå°±ä¸ç”¨åšè¿™äº›å·¥ä½œ
+	 */
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+		if (mediaPlayer == null) {
+			return;
+		}
+		currentPosition = mediaPlayer.getCurrentPosition();
+		mediaPlayer.stop();
+		mediaPlayer.release();
+		mediaPlayer = null;
+
+	}
+
+	private void setFull() {
+
+		if (sv == null | mediaPlayer == null)
+			return;
+
+		int height = mediaPlayer.getVideoHeight();
+		int width = mediaPlayer.getVideoWidth();
+		sv.getHolder().setFixedSize(width, height);
+	}
+
+	/**
+	 * ä¸€ç§’é’Ÿå®šæ—¶å›è°ƒæ¥å£
+	 * 
+	 * @author vector
+	 * 
+	 */
+	public interface OnSeekerLinstener {
+		public void callBack(int current);
+	}
+
+	public class SeekerHandler extends Handler {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case MESSAGE_SEEKER:
+				if (seekerLinstener != null&&mediaPlayer!=null) {
+					seekerLinstener.callBack(mediaPlayer.getCurrentPosition());
+				}
+				break;
+
+			default:
+				break;
 			}
 		}
+
 	}
 }

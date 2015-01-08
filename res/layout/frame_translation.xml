@@ -31,18 +31,57 @@
             android:text="搜 索" />
 
         <TextView
-            android:id="@+id/txt_frame_translation_trans"
+            android:id="@+id/frame_translation_tv_articulate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/et_frame_translation_query"
             android:layout_below="@+id/btn_frame_translation_query"
             android:layout_marginTop="26dp"
-            android:text="add
-            
-[sdf sdf]
+            android:textSize="20dp" />
 
-增加"
-            android:textSize="30px" />
+        <TextView
+            android:id="@+id/frame_translation_tv_trans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/frame_translation_iv_articulate"
+            android:layout_below="@+id/frame_translation_iv_articulate"
+            android:layout_marginTop="5dp"
+            android:textSize="20dp" />
+
+        <ImageView
+            android:id="@+id/frame_translation_iv_articulate"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            
+            
+            android:layout_alignLeft="@+id/frame_translation_tv_articulate"
+            android:layout_below="@+id/frame_translation_tv_articulate"
+            
+            android:scaleType="centerCrop"
+            android:background="@drawable/btn_laba" />
+        <ImageView
+            android:id="@+id/frame_translation_iv_add_word_list"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_alignTop="@+id/frame_translation_iv_articulate"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@+id/frame_translation_iv_articulate"
+            android:scaleType="centerCrop"
+            android:background="@drawable/btn_add_word_list"/>
+        <ImageView
+            android:id="@+id/frame_translation_iv_added_word_list"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_alignTop="@+id/frame_translation_iv_articulate"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@+id/frame_translation_iv_articulate"
+            android:scaleType="centerCrop"
+            android:background="@drawable/btn_added_word_list"
+            android:visibility="gone"/>
+
+       
     </RelativeLayout>
 
 </RelativeLayout>

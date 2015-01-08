@@ -14,7 +14,7 @@
         android:layout_centerVertical="true"
         android:ems="10"
         android:gravity="center"
-        android:text="单词本"
+        android:text="翻译"
         android:textColor="#fff"
         android:textSize="17sp" />
 
